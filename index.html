@@ -1,0 +1,277 @@
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal Information display</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+/* BACKGROUND */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #000000, #1b1b1b, #0a0a0a);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* FORM CONTAINER */
+.container {
+    width: 90%;
+    max-width: 700px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 40px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* HEADER */
+h2 {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+    font-size: 28px;
+    letter-spacing: 1px;
+}
+
+/* FORM GROUP */
+.form-group {
+    position: relative;
+    margin-bottom: 23px;
+}
+
+/* INPUTS */
+input, select, textarea {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: 2px solid #555;
+    background: #000;
+    color: #fff;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+/* FOCUS EFFECT */
+input:focus, select:focus, textarea:focus {
+    border-color: #00ffc3;
+    box-shadow: 0 0 10px #00ffc37a;
+}
+
+/* FLOATING LABEL */
+label {
+    position: absolute;
+    top: 14px;
+    left: 18px;
+    font-size: 15px;
+    color: #ccc;
+    transition: 0.3s;
+    pointer-events: none;
+}
+
+input:focus + label,
+input:not(:placeholder-shown) + label,
+textarea:focus + label,
+textarea:not(:placeholder-shown) + label,
+select:focus + label,
+select:not([value=""]) + label {
+    top: -10px;
+    left: 15px;
+    font-size: 12px;
+    color: #00ffc3;
+    background: #000;
+    padding: 0 6px;
+}
+
+/* ERROR */
+.error {
+    color: #ff7675;
+    font-size: 12px;
+    display: none;
+    margin-top: 5px;
+}
+
+/* VALID / INVALID */
+.valid { border-color: #00ffc3 !important; }
+.invalid { border-color: #ff4d4d !important; }
+
+/* SUBMIT BUTTON */
+button {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #00ffc3, #00b894);
+    color: #000;
+    font-weight: bold;
+    font-size: 17px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 15px #00ffc36c;
+}
+button:hover {
+    transform: scale(1.05);
+}
+button:active {
+    transform: scale(0.96);
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<!-- VALIDATION SCRIPT -->
+<script>
+$(document).ready(function(){
+
+function validateField(id, regex, errorId){
+    let val = $(id).val().trim();
+    if(!regex.test(val)){
+        $(id).addClass("invalid").removeClass("valid");
+        $(errorId).show();
+        return false;
+    } else {
+        $(id).addClass("valid").removeClass("invalid");
+        $(errorId).hide();
+        return true;
+    }
+}
+
+/* VALIDATIONS */
+$("#last_name, #first_name").on("input", function(){
+    validateField(this, /^[A-Za-z]+$/, "#" + this.id + "Error");
+});
+
+$("#middle_initial").on("input", function(){
+    let val = $(this).val();
+    if(val=="" || /^[A-Za-z]$/.test(val)){
+        $(this).addClass("valid").removeClass("invalid");
+        $("#middleError").hide();
+    } else {
+        $(this).addClass("invalid").removeClass("valid");
+        $("#middleError").show();
+    }
+});
+
+$("#contact").on("input", function(){
+    validateField("#contact", /^(09\d{9}|63\d{10})$/, "#contactError");
+});
+
+$("#email").on("input", function(){
+    validateField("#email", /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,4}$/, "#emailError");
+});
+
+$("#birthday").on("change", function(){
+    let bday = new Date($(this).val());
+    let today = new Date();
+    if(bday > today){
+        $(this).addClass("invalid").removeClass("valid");
+        $("#birthdayError").show();
+    } else {
+        $(this).addClass("valid").removeClass("invalid");
+        $("#birthdayError").hide();
+    }
+});
+
+/* FORM SUBMIT VALIDATION */
+$("#personalForm").on("submit", function(e){
+    let valid = true;
+
+    if($("#gender").val() == ""){ $("#genderError").show(); valid=false; }
+    if($("#civil").val() == ""){ $("#civilError").show(); valid=false; }
+    if($("#address").val().trim() == ""){ $("#addressError").show(); valid=false; }
+
+    if(!valid) e.preventDefault();
+});
+});
+</script>
+</head>
+
+<body>
+<div class="container">
+<h2>Personal Information</h2>
+
+<form id="personalForm" action="display.php" method="POST">
+
+<div class="form-group">
+    <input type="text" id="last_name" name="last_name" placeholder=" ">
+    <label>Last Name</label>
+    <div class="error" id="last_nameError">Letters only</div>
+</div>
+
+<div class="form-group">
+    <input type="text" id="first_name" name="first_name" placeholder=" ">
+    <label>First Name</label>
+    <div class="error" id="first_nameError">Letters only</div>
+</div>
+
+<div class="form-group">
+    <input type="text" id="middle_initial" name="middle_initial" placeholder=" ">
+    <label>Middle Initial (optional)</label>
+    <div class="error" id="middleError">Single letter only</div>
+</div>
+
+<div class="form-group">
+    <select id="gender" name="gender">
+        <option value="">Select Gender</option>
+        <option>Male</option>
+        <option>Female</option>
+    </select>
+    <label>Gender</label>
+    <div class="error" id="genderError">Required</div>
+</div>
+
+<div class="form-group">
+    <input type="date" id="birthday" name="birthday" placeholder=" ">
+    <label>Birthday</label>
+    <div class="error" id="birthdayError">Invalid date</div>
+</div>
+
+<div class="form-group">
+    <input type="text" id="contact" name="contact" placeholder=" ">
+    <label>Contact Number</label>
+    <div class="error" id="contactError">09xxxxxxxxx or 63xxxxxxxxxx</div>
+</div>
+
+<div class="form-group">
+    <input type="email" id="email" name="email" placeholder=" ">
+    <label>Email</label>
+    <div class="error" id="emailError">Invalid email</div>
+</div>
+
+<div class="form-group">
+    <select id="civil" name="civil">
+        <option value="">Select Civil Status</option>
+        <option>Single</option>
+        <option>Married</option>
+        <option>Widowed</option>
+        <option>Separated</option>
+    </select>
+    <label>Civil Status</label>
+    <div class="error" id="civilError">Required</div>
+</div>
+
+<div class="form-group">
+    <textarea id="address" name="address" placeholder=" "></textarea>
+    <label>Address</label>
+    <div class="error" id="addressError">Required</div>
+</div>
+
+<button type="submit">Submit</button>
+</form>
+</div>
+</body>
+</html>
