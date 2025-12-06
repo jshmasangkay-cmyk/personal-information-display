@@ -1,0 +1,177 @@
+<?php
+session_start();
+if($_SERVER["REQUEST_METHOD"]=="POST"){
+    $_SESSION["personal"] = $_POST;
+}
+$personal = $_SESSION["personal"];
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submitted Information</title>
+<style>
+/* Body & background */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#f093fb,#f5576c);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    margin:0;
+}
+
+/* Container */
+.container {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 40px;
+    width: 90%;
+    max-width: 750px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Header */
+h2 {
+    text-align:center;
+    color: #fff;
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+/* Info card */
+.info-box {
+    background: rgba(255,255,255,0.25);
+    border-radius: 15px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    transition: all 0.3s;
+}
+.info-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+/* Label & value */
+.label {
+    font-weight:bold;
+    color: #2d3436;
+}
+.value {
+    color: #2c3e50;
+}
+
+/* Badge for Gender & Civil Status */
+.badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+/* Gender badges in black */
+.male, .female {
+    background: #000; /* black badge */
+}
+
+/* Civil Status badges */
+.single { background: #00b894; }
+.married { background: #6c5ce7; }
+.widowed { background: #d63031; }
+.separated { background: #fd79a8; }
+
+/* Back button */
+a.button {
+    display:block;
+    margin-top:25px;
+    padding:14px;
+    background: linear-gradient(135deg,#00b894,#00cec9);
+    color:white;
+    text-align:center;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:bold;
+    transition: all 0.3s;
+}
+a.button:hover { background: linear-gradient(135deg,#00cec9,#00b894); transform: scale(1.05); }
+
+@keyframes fadeIn { from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);} }
+
+/* Responsive */
+@media(max-width:768px){
+    .container { padding: 30px 20px; }
+    .info-box { flex-direction: column; align-items:flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>Submitted Information</h2>
+
+<?php if(isset($personal)): ?>
+
+<div class="info-box">
+    <span class="label">Last Name:</span>
+    <span class="value"><?= htmlspecialchars($personal['last_name']) ?></span>
+</div>
+
+<div class="info-box">
+    <span class="label">First Name:</span>
+    <span class="value"><?= htmlspecialchars($personal['first_name']) ?></span>
+</div>
+
+<div class="info-box">
+    <span class="label">Middle Initial:</span>
+    <span class="value"><?= htmlspecialchars($personal['middle_initial']) ?></span>
+</div>
+
+<div class="info-box">
+    <span class="label">Gender:</span>
+    <?php $gender = strtolower($personal['gender']); ?>
+    <span class="value badge <?= $gender ?>"><?= htmlspecialchars($personal['gender']) ?></span>
+</div>
+
+<div class="info-box">
+    <span class="label">Birthday:</span>
+    <span class="value"><?= htmlspecialchars($personal['birthday']) ?></span>
+</div>
+
+<div class="info-box">
+    <span class="label">Contact Number:</span>
+    <span class="value"><?= htmlspecialchars($personal['contact']) ?></span>
+</div>
+
+<div class="info-box">
+    <span class="label">Email:</span>
+    <span class="value"><?= htmlspecialchars($personal['email']) ?></span>
+</div>
+
+<div class="info-box">
+    <span class="label">Civil Status:</span>
+    <?php $civil = strtolower($personal['civil']); ?>
+    <span class="value badge <?= $civil ?>"><?= htmlspecialchars($personal['civil']) ?></span>
+</div>
+
+<div class="info-box">
+    <span class="label">Address:</span>
+    <span class="value"><?= htmlspecialchars($personal['address']) ?></span>
+</div>
+
+<?php endif; ?>
+
+<a href="personal_info.php" class="button">Back to Form</a>
+</div>
+
+</body>
+</html>
